@@ -77,7 +77,8 @@ const handleLogin = [
 
         //Detected refresh token reuse
         if (!foundToken) {
-          console.log("Attempted refresh token reuse at login.");
+          process.env.NODE_ENV === "development" &&
+            console.log("Attempted refresh token reuse at login.");
           //Clear out All previous refresh tokens
           newRefreshTokenArray = [];
         }
@@ -103,7 +104,7 @@ const handleLogin = [
         secure: process.env.NODE_ENV === "production" ? true : false,
         maxAge: 24 * 60 * 60 * 1000,
       });
-      console.log(accessToken);
+      process.env.NODE_ENV === "development" && console.log(accessToken);
 
       res.json({ accessToken });
     } else {

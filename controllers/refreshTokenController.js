@@ -35,7 +35,8 @@ const handleRefreshToken = async (req, res) => {
           if (err) {
             return res.sendStatus(403);
           }
-          console.log("Attempted Refresh Token Reuse");
+          process.env.NODE_ENV === "development" &&
+            console.log("Attempted Refresh Token Reuse");
           const hackedUser = await prisma.user.update({
             where: {
               username: decoded.username,
@@ -44,7 +45,7 @@ const handleRefreshToken = async (req, res) => {
               refreshToken: [],
             },
           });
-          console.log(hackedUser);
+          process.env.NODE_ENV === "development" && console.log(hackedUser);
         }
       );
       return res.sendStatus(403); //Unauthrorized
@@ -59,7 +60,8 @@ const handleRefreshToken = async (req, res) => {
       process.env.REFRESH_TOKEN_SECRET,
       async (err, decoded) => {
         if (err) {
-          console.log("Expired Refresh Token: ");
+          process.env.NODE_ENV === "development" &&
+            console.log("Expired Refresh Token: ");
           await prisma.user.update({
             where: { id: foundUser.id },
             data: { refreshToken: newRefreshTokenArray },
@@ -105,7 +107,8 @@ const handleRefreshToken = async (req, res) => {
       }
     );
   } catch (error) {
-    console.error("Error handling refresh token:", error);
+    process.env.NODE_ENV === "development" &&
+      console.error("Error handling refresh token:", error);
     res.sendStatus(500);
   }
 };

@@ -4,7 +4,7 @@ const handleLogout = async (req, res) => {
   //On Client Also delete the access Token//
   const cookies = req.cookies;
   if (!cookies?.jwt) {
-    console.log("No Cookies found");
+    process.env.NODE_ENV === "development" && console.log("No Cookies found");
     return res.sendStatus(204); //Content not found
   }
 
@@ -26,7 +26,7 @@ const handleLogout = async (req, res) => {
         sameSite: "Lax",
         secure: process.env.NODE_ENV === "production",
       });
-      console.log("No user found.");
+      process.env.NODE_ENV === "development" && console.log("No user found.");
       return res.status(204).json({ message: "No user found." });
     }
     const newRefreshTokenArray = foundUser.refreshToken.filter(
@@ -40,13 +40,15 @@ const handleLogout = async (req, res) => {
         refreshToken: newRefreshTokenArray,
       },
     });
-    console.log("Updating refresh Token in ", updatedUser);
+    process.env.NODE_ENV === "development" &&
+      console.log("Updating refresh Token in ", updatedUser);
     res.clearCookie("jwt", {
       httpOnly: true,
       sameSite: "Lax",
       secure: process.env.NODE_ENV === "production",
     });
-    console.log("Userfound and deleting cookies");
+    process.env.NODE_ENV === "development" &&
+      console.log("Userfound and deleting cookies");
     res.status(204).json({ message: "Logout Successful" });
   } catch (error) {
     console.error(error);

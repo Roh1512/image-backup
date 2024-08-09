@@ -67,7 +67,6 @@ app.use("/auth", authRouter);
 // Apply user verification middleware
 app.use(verifyUser);
 app.use("/users", usersRouter);
-app.use("/protected", require("./routes/protected"));
 app.use("/files", filesRouter);
 
 // Catch 404 and forward to error handler
