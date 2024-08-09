@@ -34,12 +34,12 @@ const handleLogin = [
     });
 
     if (!foundUser) {
-      console.log("User not found");
+      process.env.NODE_ENV === "development" && console.log("User not found");
       return res.status(401).json({ message: "Username does not exists" }); //Unauthorized
     }
     const match = await bcrypt.compare(password, foundUser.password);
 
-    console.log("Match:", match);
+    process.env.NODE_ENV === "development" && console.log("Match:", match);
 
     if (match) {
       const accessToken = jwt.sign(
@@ -50,7 +50,7 @@ const handleLogin = [
           },
         },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "30m" }
+        { expiresIn: "15m" }
       );
 
       const newRefreshToken = jwt.sign(
@@ -96,16 +96,18 @@ const handleLogin = [
           refreshToken: [...newRefreshTokenArray, newRefreshToken],
         },
       });
-      console.log(updatingUser);
+      process.env.NODE_ENV === "development" && console.log(updatingUser);
       res.cookie("jwt", newRefreshToken, {
         httpOnly: true,
         sameSite: "Lax",
         secure: process.env.NODE_ENV === "production" ? true : false,
         maxAge: 24 * 60 * 60 * 1000,
       });
+      console.log(accessToken);
+
       res.json({ accessToken });
     } else {
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(401).json({ message: "Incorrect Password" });
     }
   }),
 ];

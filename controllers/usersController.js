@@ -101,28 +101,43 @@ exports.deleteAccount = asyncHandler(async (req, res) => {
     if (!userfound) {
       return res.status(404).json({ message: "User not found." });
     }
+
+    // Delete all files from Cloudinary
     try {
-      userfound.files.map(async (file) => {
-        await cloudinary.uploader.destroy(file.public_id);
+      const deletePromises = userfound.files.map(async (file) => {
+        // Determine the resource type (image or video)
+        const resourceType = file.type === "VIDEO" ? "video" : "image";
+
+        // Delete the file from Cloudinary with the correct resource type
+        await cloudinary.uploader.destroy(file.public_id, {
+          resource_type: resourceType,
+        });
         process.env.NODE_ENV === "development" &&
-          console.log("Deleted all files");
+          console.log(`Deleted ${file.type.toLowerCase()} from Cloudinary`);
       });
+
+      // Wait for all delete operations to complete
+      await Promise.all(deletePromises);
     } catch (error) {
-      process.env.NODE_ENV === "development" && console.error(error);
-      return error;
+      console.error("Error deleting files from Cloudinary:", error);
+      return res
+        .status(500)
+        .json({ message: "An error occurred while deleting files." });
     }
+
+    // Delete all file records associated with the user in the database
     await prisma.file.deleteMany({
-      where: {
-        userId: userId,
-      },
+      where: { userId: userId },
     });
+
+    // Delete the user's account from the database
     await prisma.user.delete({
-      where: {
-        id: userId,
-      },
+      where: { id: userId },
     });
-    res.clearCookie("jwt"); /*Also clear access token on client */
-    res.status(201).json({ message: "User account deleted" });
+
+    // Clear the user's cookies and send a success response
+    res.clearCookie("jwt"); /* Also clear access token on client */
+    res.status(201).json({ message: "User account deleted successfully" });
   } catch (error) {
     console.error("Error deleting user account and files:", error);
     res

@@ -8,66 +8,77 @@ const cors = require("cors");
 const helmet = require("helmet");
 
 const corsOptions = require("./config/corsOptions");
-
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+const indexRouter = require("./routes/index");
+const usersRouter = require("./routes/users");
 const authRouter = require("./routes/authRoutes");
 const filesRouter = require("./routes/files");
 const credentials = require("./middleware/credentials");
 const verifyUser = require("./middleware/verifyUser");
-
 const compression = require("compression");
 
-var app = express();
+const app = express();
 
-// Set up rate limiter: maximum of twenty requests per minute
+// Rate limiter: maximum of fifty requests per minute
 const RateLimit = require("express-rate-limit");
 const limiter = RateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 50,
+  max: 200,
 });
-// Apply rate limiter to all requests
 app.use(limiter);
 
+// Apply credentials middleware before CORS
+app.use(credentials);
+
+// Apply CORS middleware early
+app.use(cors(corsOptions));
+
+// Add handler for OPTIONS requests
+/* app.options("*", cors(corsOptions)); */
+
+// Helmet configuration
 app.use(
   helmet.contentSecurityPolicy({
     directives: {},
   })
 );
-app.use(credentials);
-app.use(cors(corsOptions));
 
-// view engine setup
+// View engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: false }));
 app.use(cookieParser());
 app.use(compression());
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use((req, res, next) => {
+  res.setTimeout(1000000, () => {
+    console.log("Request has timed out.");
+    res.send(408);
+  });
+  next();
+});
+
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 
+// Apply user verification middleware
 app.use(verifyUser);
 app.use("/users", usersRouter);
 app.use("/protected", require("./routes/protected"));
 app.use("/files", filesRouter);
 
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
 });
 
-// error handler
+// Error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
-
-  // render the error page
   res.status(err.status || 500);
   res.render("error");
 });

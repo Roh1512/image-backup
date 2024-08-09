@@ -12,12 +12,41 @@ exports.getAllFiles = asyncHandler(async (req, res) => {
   if (!userId) {
     return res.status(401).json({ message: "You are unauthorized." });
   }
-  const allFiles = await prisma.file.findMany({
-    where: {
-      userId: userId,
-    },
+  const type = req.query.type ? req.query.type.toUpperCase() : null;
+
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const skip = (page - 1) * limit;
+
+  const whereClause = {
+    userId: userId,
+  };
+
+  if (type) {
+    whereClause.type = type;
+  }
+  const [allFiles, totalFiles] = await Promise.all([
+    prisma.file.findMany({
+      where: whereClause,
+      skip: skip,
+      take: limit,
+      orderBy: {
+        createdAt: "desc", // or 'asc'
+      },
+    }),
+    prisma.file.count({
+      where: whereClause,
+    }),
+  ]);
+
+  const totalPages = Math.ceil(totalFiles / limit);
+
+  return res.status(200).json({
+    files: allFiles,
+    totalFiles,
+    totalPages,
+    currentPage: page,
   });
-  return res.status(200).json(allFiles);
 });
 
 exports.getFileById = asyncHandler(async (req, res) => {
@@ -25,9 +54,9 @@ exports.getFileById = asyncHandler(async (req, res) => {
   if (!userId) {
     return res.status(401).json({ message: "You are unauthorized." });
   }
-  const { fileId } = req.params;
+  const { fileid } = req.params;
   const file = await prisma.file.findFirst({
-    where: { id: fileId, userId: userId },
+    where: { id: fileid },
   });
   if (!file) {
     return res.status(404).json({ message: "File does not exists." });
@@ -107,7 +136,7 @@ exports.deleteFile = asyncHandler(async (req, res) => {
   if (!userId) {
     return res.status(401).json({ message: "You are unauthorized." });
   }
-  const id = req.params.id;
+  const id = req.params?.fileid;
 
   try {
     // Find the file in the database
@@ -118,16 +147,24 @@ exports.deleteFile = asyncHandler(async (req, res) => {
     if (!file) {
       return res.status(404).json({ message: "File not found" });
     }
+
+    // Determine the resource type
+    const resourceType = file.type === "VIDEO" ? "video" : "image";
+
     // Delete the file from Cloudinary
-    await cloudinary.uploader.destroy(file.public_id, (error, result) => {
-      if (error) {
-        console.error("Cloudinary deletion error:", error);
-        return res
-          .status(500)
-          .json({ message: "Failed to delete file from Cloudinary" });
+    await cloudinary.uploader.destroy(
+      file.public_id,
+      { resource_type: resourceType }, // Specify resource type
+      (error, result) => {
+        if (error) {
+          console.error("Cloudinary deletion error:", error);
+          return res
+            .status(500)
+            .json({ message: "Failed to delete file from Cloudinary" });
+        }
+        console.log("Cloudinary deletion result:", result);
       }
-      console.log("Cloudinary deletion result:", result);
-    });
+    );
 
     // Delete the file metadata from the database
     await prisma.file.delete({

@@ -27,7 +27,7 @@ const handleLogout = async (req, res) => {
         secure: process.env.NODE_ENV === "production",
       });
       console.log("No user found.");
-      return res.sendStatus(204);
+      return res.status(204).json({ message: "No user found." });
     }
     const newRefreshTokenArray = foundUser.refreshToken.filter(
       (rt) => rt !== refreshToken
