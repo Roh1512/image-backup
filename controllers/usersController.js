@@ -39,44 +39,114 @@ exports.editUserDetails = [
       return res.status(400).json({ message: errors.array()[0].msg });
     }
     const userId = req.user?.id;
-    const { username, email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(
-      password,
-      parseInt(process.env.PW_HASH)
+    const { username, email, currentPassword } = req.body;
+    const currentUser = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    const currentPasswordCheck = await bcrypt.compare(
+      currentPassword,
+      currentUser.password
     );
-    try {
-      const existingUser = await prisma.user.findFirst({
-        where: {
-          OR: [{ username: username }, { email: email }],
-          NOT: {
-            id: userId, // Ensure the user is not checking their own details
+    if (currentPasswordCheck) {
+      try {
+        const existingUser = await prisma.user.findFirst({
+          where: {
+            OR: [{ username: username }, { email: email }],
+            NOT: {
+              id: userId, // Ensure the user is not checking their own details
+            },
           },
-        },
-      });
-      if (existingUser) {
-        // If a user with the given username or email already exists, send an error message
-        return res.status(400).json({
-          message:
-            "Username or email already exists. Please choose a different one.",
         });
+        if (existingUser) {
+          // If a user with the given username or email already exists, send an error message
+          return res.status(400).json({
+            message:
+              "Username or email already exists. Please choose a different one.",
+          });
+        }
+
+        // Proceed with updating the user details if validation passes
+        const updatedUser = await prisma.user.update({
+          where: { id: userId },
+          data: { username, email },
+        });
+
+        // Send a success response with the updated user details
+        res.status(201).json({
+          message: "User details updated successfully.",
+          user: updatedUser,
+        });
+      } catch (error) {
+        console.error("Error updating user details:", error);
+        return res
+          .status(500)
+          .json({ message: "An error occurred while updating user details." });
       }
-
-      // Proceed with updating the user details if validation passes
-      const updatedUser = await prisma.user.update({
-        where: { id: userId },
-        data: { username, email, password: hashedPassword },
-      });
-
-      // Send a success response with the updated user details
-      res.status(201).json({
-        message: "User details updated successfully.",
-        user: updatedUser,
-      });
-    } catch (error) {
-      console.error("Error updating user details:", error);
+    } else {
       return res
-        .status(500)
-        .json({ message: "An error occurred while updating user details." });
+        .status(400)
+        .json({ message: "You have entered the wrong password" });
+    }
+  }),
+];
+
+exports.changePassword = [
+  body("currentPassword")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Current password should not be empty")
+    .escape(),
+  body("newPassword")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Current password should not be empty")
+    .escape(),
+  asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: errors.array()[0].msg });
+    }
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(500).json({ message: "Unauthorized" });
+    }
+    const { currentPassword, newPassword } = req.body;
+    const currentUser = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    if (!currentUser) {
+      return res.status(500).json("User not found.");
+    }
+    const currentPasswordCheck = await bcrypt.compare(
+      currentPassword,
+      currentUser.password
+    );
+    if (currentPasswordCheck) {
+      try {
+        const newPasswordHashed = await bcrypt.hash(
+          newPassword,
+          parseInt(process.env.PW_HASH)
+        );
+        const updatedUser = await prisma.user.update({
+          where: { id: userId },
+          data: { password: newPasswordHashed },
+        });
+        process.env.NODE_ENV === "development" && console.log(updatedUser);
+        return res
+          .status(201)
+          .json({ message: "Password Changed successfully." });
+      } catch (error) {
+        console.error("Error changing password", error);
+        return res
+          .status(500)
+          .json({ message: "An error occurred while changing password." });
+      }
+    } else {
+      res.status(400).json({ message: "Current password is incorrect." });
     }
   }),
 ];
