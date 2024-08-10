@@ -6,5 +6,7 @@ const allowedOrigins = [
   "http://localhost:4173", */
   "https://image-backup.netlify.app/",
   "https://image-backup.netlify.app",
+  "https://main--image-backup.netlify.app/",
+  "https://main--image-backup.netlify.app",
 ];
 module.exports = allowedOrigins;
