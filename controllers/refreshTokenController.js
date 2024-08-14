@@ -15,6 +15,7 @@ const handleRefreshToken = async (req, res) => {
     httpOnly: true,
     sameSite: "Lax",
     secure: process.env.NODE_ENV === "production" ? true : false,
+    maxAge: 24 * 60 * 60 * 1000,
   });
 
   try {
@@ -100,7 +101,7 @@ const handleRefreshToken = async (req, res) => {
         res.cookie("jwt", newRefreshToken, {
           httpOnly: true,
           sameSite: "Lax",
-          secure: process.env.NODE_ENV === "production",
+          secure: process.env.NODE_ENV === "production" ? true : false,
           maxAge: 24 * 60 * 60 * 1000,
         });
         res.json({ accessToken: accessToken });

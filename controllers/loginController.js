@@ -85,7 +85,8 @@ const handleLogin = [
         res.clearCookie("jwt", {
           httpOnly: true,
           sameSite: "Lax",
-          secure: process.env.NODE_ENV === "production",
+          secure: process.env.NODE_ENV === "production" ? true : false,
+          maxAge: 24 * 60 * 60 * 1000,
         });
       }
 
@@ -101,7 +102,7 @@ const handleLogin = [
       res.cookie("jwt", newRefreshToken, {
         httpOnly: true,
         sameSite: "Lax",
-        secure: process.env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV === "production" ? true : false,
         maxAge: 24 * 60 * 60 * 1000,
       });
       process.env.NODE_ENV === "development" && console.log(accessToken);
