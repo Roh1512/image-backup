@@ -15,7 +15,6 @@ const handleRefreshToken = async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production", // true if in production
     sameSite: "None", // 'None' allows cross-origin requests with cookies
-    path: "/",
     maxAge: 24 * 60 * 60 * 1000, // 1 day
   });
 
@@ -101,10 +100,9 @@ const handleRefreshToken = async (req, res) => {
         // Set the new refresh token as a cookie
         res.cookie("jwt", newRefreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production", // true if in production
-          sameSite: "None", // 'None' allows cross-origin requests with cookies
-          path: "/",
-          maxAge: 24 * 60 * 60 * 1000, // 1 day
+          sameSite: "Lax",
+          secure: process.env.NODE_ENV === "production" ? true : false,
+          maxAge: 24 * 60 * 60 * 1000,
         });
         res.json({ accessToken: accessToken });
       }
