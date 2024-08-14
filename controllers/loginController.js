@@ -86,6 +86,7 @@ const handleLogin = [
           httpOnly: true,
           secure: process.env.NODE_ENV === "production", // true if in production
           sameSite: "None", // 'None' allows cross-origin requests with cookies
+          path: "/",
           maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
       }
@@ -103,6 +104,7 @@ const handleLogin = [
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // true if in production
         sameSite: "None", // 'None' allows cross-origin requests with cookies
+        path: "/",
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       });
       process.env.NODE_ENV === "development" && console.log(accessToken);

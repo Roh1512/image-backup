@@ -15,6 +15,7 @@ const handleRefreshToken = async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production", // true if in production
     sameSite: "None", // 'None' allows cross-origin requests with cookies
+    path: "/",
     maxAge: 24 * 60 * 60 * 1000, // 1 day
   });
 
@@ -102,6 +103,7 @@ const handleRefreshToken = async (req, res) => {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production", // true if in production
           sameSite: "None", // 'None' allows cross-origin requests with cookies
+          path: "/",
           maxAge: 24 * 60 * 60 * 1000, // 1 day
         });
         res.json({ accessToken: accessToken });
