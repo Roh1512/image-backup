@@ -3,8 +3,8 @@ const jwt = require("jsonwebtoken");
 
 const handleRefreshToken = async (req, res) => {
   const cookies = req.cookies;
-  process.env.NODE_ENV =
-    "development" && console.log("Cookies at refreshRequest: ", cookies);
+  process.env.NODE_ENV === "development" &&
+    console.log("Cookies at refreshRequest: ", cookies);
 
   if (!cookies?.jwt) {
     return res.sendStatus(401);
@@ -100,7 +100,7 @@ const handleRefreshToken = async (req, res) => {
         res.cookie("jwt", newRefreshToken, {
           httpOnly: true,
           sameSite: "Lax",
-          secure: process.env.NODE_ENV === "production" ? true : false,
+          secure: process.env.NODE_ENV === "production",
           maxAge: 24 * 60 * 60 * 1000,
         });
         res.json({ accessToken: accessToken });
