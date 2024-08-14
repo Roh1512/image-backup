@@ -33,7 +33,7 @@ app.use(credentials);
 app.use(cors(corsOptions));
 
 // Add handler for OPTIONS requests
-app.options("*", cors(corsOptions));
+/* app.options("*", cors(corsOptions)); */
 
 // Helmet configuration
 app.use(
