@@ -3,8 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const handleRefreshToken = async (req, res) => {
   const cookies = req.cookies;
-  process.env.NODE_ENV === "development" &&
-    console.log("Cookies at refreshRequest: ", cookies);
+  console.log("Cookies at refreshRequest: ", cookies);
 
   if (!cookies?.jwt) {
     return res.sendStatus(401);
