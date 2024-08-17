@@ -4,7 +4,7 @@ const allowedOrigins = require("./allowedOrigins");
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+    if (allowedOrigins.indexOf(origin) !== -1) {
       // Allow Postman or no origin
       callback(null, true);
     } else {
