@@ -18,6 +18,8 @@ const compression = require("compression");
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 // Rate limiter: maximum of fifty requests per minute
 const RateLimit = require("express-rate-limit");
 const limiter = RateLimit({
