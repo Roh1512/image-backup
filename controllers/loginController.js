@@ -85,7 +85,7 @@ const handleLogin = [
         res.clearCookie("jwt", {
           httpOnly: true,
           sameSite: "None",
-          secure: true,
+          secure: process.env.NODE_ENV === "production",
           maxAge: 24 * 60 * 60 * 1000,
         });
       }
@@ -102,7 +102,7 @@ const handleLogin = [
       res.cookie("jwt", newRefreshToken, {
         httpOnly: true,
         sameSite: "None",
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         maxAge: 24 * 60 * 60 * 1000,
       });
       process.env.NODE_ENV === "development" && console.log(accessToken);
