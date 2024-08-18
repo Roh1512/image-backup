@@ -12,9 +12,9 @@ const handleRefreshToken = async (req, res) => {
   const refreshToken = cookies.jwt;
   res.clearCookie("jwt", {
     httpOnly: true,
-    /* sameSite: "Lax",
-    secure: process.env.NODE_ENV === "production" ? true : false, */
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    sameSite: "None",
+    secure: true,
+    maxAge: 24 * 60 * 60 * 1000,
   });
 
   try {
@@ -99,8 +99,8 @@ const handleRefreshToken = async (req, res) => {
         // Set the new refresh token as a cookie
         res.cookie("jwt", newRefreshToken, {
           httpOnly: true,
-          /* sameSite: "Lax",
-          secure: process.env.NODE_ENV === "production" ? true : false, */
+          sameSite: "None",
+          secure: true,
           maxAge: 24 * 60 * 60 * 1000,
         });
         res.json({ accessToken: accessToken });
