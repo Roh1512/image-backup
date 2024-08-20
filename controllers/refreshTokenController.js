@@ -16,6 +16,7 @@ const handleRefreshToken = async (req, res) => {
   /* res.clearCookie("jwt", {
     httpOnly: true,
     sameSite: "None",
+    path:"/"
     secure: process.env.NODE_ENV === "production",
   }); */
 
@@ -103,7 +104,8 @@ const handleRefreshToken = async (req, res) => {
 
         res.cookie("jwt", newRefreshToken, {
           httpOnly: true,
-          sameSite: "Lax",
+          sameSite: "None",
+          path: "/",
           secure: process.env.NODE_ENV === "production",
           maxAge: 24 * 60 * 60 * 1000,
         });
