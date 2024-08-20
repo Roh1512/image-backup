@@ -24,7 +24,7 @@ app.set("trust proxy", 1);
 const RateLimit = require("express-rate-limit");
 const limiter = RateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 200,
+  max: 1000,
 });
 app.use(limiter);
 
@@ -35,7 +35,7 @@ app.use(credentials);
 app.use(cors(corsOptions));
 
 // Add handler for OPTIONS requests
-/* app.options("*", cors(corsOptions)); */
+// app.options("*", cors(corsOptions));
 
 // Helmet configuration
 app.use(
@@ -45,8 +45,8 @@ app.use(
 );
 
 app.use(logger("dev"));
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: false }));
+app.use(express.json({ limit: "100mb" }));
+app.use(express.urlencoded({ limit: "100mb", extended: false }));
 app.use(cookieParser());
 app.use(compression());
 app.use(express.static(path.join(__dirname, "public")));

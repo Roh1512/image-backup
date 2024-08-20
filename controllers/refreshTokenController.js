@@ -5,17 +5,19 @@ const handleRefreshToken = async (req, res) => {
   const cookies = req.cookies;
   console.log("Cookies at refreshRequest: ", cookies);
 
-  if (!cookies?.jwt) {
-    return res.sendStatus(401);
+  if (!cookies) {
+    console.log("No refresh cookie available");
+    return res.status(401).json({ message: "No refresh cookie available" });
   }
 
   const refreshToken = cookies.jwt;
-  res.clearCookie("jwt", {
+  console.log("Received refresh token: ", refreshToken);
+
+  /* res.clearCookie("jwt", {
     httpOnly: true,
-    sameSite: "Lax",
-    secure: process.env.NODE_ENV === "production" ? true : false,
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
-  });
+    sameSite: "None",
+    secure: process.env.NODE_ENV === "production",
+  }); */
 
   try {
     const foundUser = await prisma.user.findFirst({
@@ -26,17 +28,19 @@ const handleRefreshToken = async (req, res) => {
       },
     });
 
-    //Detected refresh token reuse
-    if (!foundUser) {
+    process.env.NODE_ENV === "development" &&
+      console.log("User with the RT: ", foundUser);
+
+    if (foundUser === null) {
       jwt.verify(
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
         async (err, decoded) => {
           if (err) {
+            console.log("Error decoding refresh token : ", err);
             return res.sendStatus(403);
           }
-          process.env.NODE_ENV === "development" &&
-            console.log("Attempted Refresh Token Reuse");
+          console.log("Attempted Refresh Token Reuse");
           const hackedUser = await prisma.user.update({
             where: {
               username: decoded.username,
@@ -45,23 +49,23 @@ const handleRefreshToken = async (req, res) => {
               refreshToken: [],
             },
           });
-          process.env.NODE_ENV === "development" && console.log(hackedUser);
+          console.log(hackedUser);
         }
       );
-      return res.sendStatus(403); //Unauthrorized
+      console.log("Unauthorized - Refresh Token Reuse");
+      return res.sendStatus(403);
     }
+
     const newRefreshTokenArray = foundUser.refreshToken.filter(
       (rt) => rt !== refreshToken
     );
 
-    //Evaluate JWT
     jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
       async (err, decoded) => {
         if (err) {
-          process.env.NODE_ENV === "development" &&
-            console.log("Expired Refresh Token: ");
+          console.log("Expired Refresh Token: ");
           await prisma.user.update({
             where: { id: foundUser.id },
             data: { refreshToken: newRefreshTokenArray },
@@ -69,10 +73,12 @@ const handleRefreshToken = async (req, res) => {
           return res.sendStatus(403);
         }
         if (foundUser.username !== decoded.username) {
+          process.env.NODE_ENV === "development" &&
+            console.log("RT does not match");
           return res.sendStatus(403);
         }
 
-        //Refresh token is still valid
+        // Issue new tokens
         const accessToken = jwt.sign(
           {
             UserInfo: {
@@ -81,7 +87,7 @@ const handleRefreshToken = async (req, res) => {
             },
           },
           process.env.ACCESS_TOKEN_SECRET,
-          { expiresIn: "15m" }
+          { expiresIn: "60m" }
         );
         const newRefreshToken = jwt.sign(
           {
@@ -90,25 +96,22 @@ const handleRefreshToken = async (req, res) => {
           process.env.REFRESH_TOKEN_SECRET,
           { expiresIn: "1d" }
         );
-        // Update user with the new refresh token
         await prisma.user.update({
           where: { id: foundUser.id },
           data: { refreshToken: [...newRefreshTokenArray, newRefreshToken] },
         });
 
-        // Set the new refresh token as a cookie
         res.cookie("jwt", newRefreshToken, {
           httpOnly: true,
-          sameSite: "Lax",
-          secure: process.env.NODE_ENV === "production" ? true : false,
+          sameSite: "None",
+          secure: process.env.NODE_ENV === "production",
           maxAge: 24 * 60 * 60 * 1000,
         });
-        res.json({ accessToken: accessToken });
+        res.json({ accessToken });
       }
     );
   } catch (error) {
-    process.env.NODE_ENV === "development" &&
-      console.error("Error handling refresh token:", error);
+    console.error("Error handling refresh token:", error);
     res.sendStatus(500);
   }
 };
