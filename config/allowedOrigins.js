@@ -5,8 +5,9 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5173/",
   "http://localhost:4173",
+   */
   "https://image-backup.netlify.app",
-  "https://image-backup.netlify.app/", */
+  "https://image-backup.netlify.app/",
   "https://66c4a95470e0d6007a96fe44--image-backup.netlify.app/",
   "https://66c4a95470e0d6007a96fe44--image-backup.netlify.app",
 ];
