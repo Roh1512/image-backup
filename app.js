@@ -32,10 +32,10 @@ app.use(limiter);
 app.use(credentials);
 
 // Apply CORS middleware early
+app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
 
 // Add handler for OPTIONS requests
-// app.options("*", cors(corsOptions));
 
 // Helmet configuration
 app.use(

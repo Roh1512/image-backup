@@ -111,6 +111,8 @@ const handleLogin = [
         process.env.NODE_ENV === "development" &&
           console.log("New Access Token", accessToken);
 
+        console.log(res.getHeaders());
+
         res.json({ accessToken });
       } else {
         res.status(401).json({ message: "Incorrect Password" });
