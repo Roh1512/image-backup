@@ -16,7 +16,7 @@ const handleLogin = [
     .withMessage("Password must not be empty")
     .escape(),
   async (req, res) => {
-    const cookies = req.cookies || {};
+    const cookies = (await req.cookies) || {};
     process.env.NODE_ENV === "development" &&
       console.log("Cookie avalable at login:\n", JSON.stringify(cookies));
     const { username, password } = req.body;

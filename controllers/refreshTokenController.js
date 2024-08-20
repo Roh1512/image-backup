@@ -2,7 +2,7 @@ const prisma = require("../config/prismaClient");
 const jwt = require("jsonwebtoken");
 
 const handleRefreshToken = async (req, res) => {
-  const cookies = req.cookies;
+  const cookies = await req.cookies;
   console.log("Cookies at refreshRequest: ", cookies);
 
   if (!cookies) {
