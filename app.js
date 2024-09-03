@@ -5,7 +5,6 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
-const corsOptions = require("./config/corsOptions");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const authRouter = require("./routes/authRoutes");
@@ -26,12 +25,6 @@ const limiter = RateLimit({
   max: 1000,
 });
 app.use(limiter);
-
-// Apply CORS middleware early
-/* app.options("*", cors(corsOptions));
-app.use(cors(corsOptions)); */
-
-// Add handler for OPTIONS requests
 
 app.use(logger("dev"));
 app.use(express.json({ limit: "100mb" }));
