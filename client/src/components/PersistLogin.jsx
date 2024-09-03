@@ -8,14 +8,15 @@ import LoadingElement from "./LoadingElement/LoadingElement";
 const PersistLogin = () => {
   const [isLoading, setIsLoading] = useState(true);
   const refresh = useRefreshToken();
-  const { auth } = useAuth();
+  const { auth, setAuth } = useAuth();
   const [persist] = useLocalStorage("persist", false);
 
   useEffect(() => {
     let isMounted = true;
     const verifyRefreshToken = async () => {
       try {
-        await refresh();
+        const accessToken = await refresh();
+        setAuth(accessToken);
       } catch (error) {
         console.error("Refresh Token Error: ", error);
       } finally {
