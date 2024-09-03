@@ -101,13 +101,13 @@ const handleRefreshToken = async (req, res) => {
         res.clearCookie("jwt", {
           httpOnly: true,
           sameSite: "None",
-          secure: process.env.NODE_ENV === "production",
+          secure: true,
         });
 
         // Set new cookie after updating the user's refresh tokens
         res.cookie("jwt", newRefreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
+          secure: true,
           maxAge: 24 * 60 * 60 * 1000,
           sameSite: "None",
         });

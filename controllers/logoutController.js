@@ -23,7 +23,7 @@ const handleLogout = async (req, res) => {
     if (!foundUser) {
       res.clearCookie("jwt", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         sameSite: "None",
       });
       process.env.NODE_ENV === "development" && console.log("No user found.");
@@ -44,7 +44,7 @@ const handleLogout = async (req, res) => {
       console.log("Updating refresh Token in ", updatedUser);
     res.clearCookie("jwt", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "None",
     });
     process.env.NODE_ENV === "development" &&

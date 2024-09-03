@@ -86,7 +86,7 @@ const handleLogin = [
           }
           res.clearCookie("jwt", {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
             sameSite: "None",
           });
         }
@@ -102,7 +102,7 @@ const handleLogin = [
         console.log("Updating refresh token array: ", updatingUser);
         res.cookie("jwt", newRefreshToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
+          secure: true,
           maxAge: 24 * 60 * 60 * 1000,
           sameSite: "None",
         });
