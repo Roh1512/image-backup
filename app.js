@@ -36,7 +36,7 @@ app.use(cors(corsOptions)); */
 // Add handler for OPTIONS requests
 
 // Helmet configuration
-app.use();
+app.use(helmet());
 
 app.use(logger("dev"));
 app.use(express.json({ limit: "100mb" }));
