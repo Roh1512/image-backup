@@ -4,7 +4,6 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const helmet = require("helmet");
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
@@ -26,19 +25,6 @@ const limiter = RateLimit({
   max: 1000,
 });
 app.use(limiter);
-
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      "script-src": ["'self'", "code.jquery.com", "cdn.jsdelivr.net"],
-      imgSrc: [
-        "'self'", // Allow images from the same origin
-        "https://res.cloudinary.com", // Allow images from Cloudinary
-        "data:", // Allow data URIs for images
-      ],
-    },
-  })
-);
 
 app.use(logger("dev"));
 app.use(express.json({ limit: "100mb" }));
