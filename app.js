@@ -36,18 +36,13 @@ app.use(cors(corsOptions)); */
 // Add handler for OPTIONS requests
 
 // Helmet configuration
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {},
-  })
-);
+app.use();
 
 app.use(logger("dev"));
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ limit: "100mb", extended: false }));
 app.use(cookieParser());
 app.use(compression());
-app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
   res.setTimeout(1000000, () => {
