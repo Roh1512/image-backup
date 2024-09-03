@@ -114,6 +114,8 @@ const handleRefreshToken = async (req, res) => {
           sameSite: "None",
         });
 
+        console.log("Access token sent: ", accessToken);
+
         return res.json({ accessToken });
       }
     );
