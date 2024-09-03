@@ -12,8 +12,4 @@ export default defineConfig({
       },
     },
   },
-  build: {
-    outDir: "dist", // Make sure this matches your serve directory
-    sourcemap: false, // Typically false in production
-  },
 });
