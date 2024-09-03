@@ -2,23 +2,16 @@ const prisma = require("../config/prismaClient");
 const jwt = require("jsonwebtoken");
 
 const handleRefreshToken = async (req, res) => {
-  const cookies = await req.cookies;
+  const cookies = req.cookies;
   console.log("Cookies at refreshRequest: ", cookies);
 
-  if (!cookies) {
+  if (!cookies.jwt) {
     console.log("No refresh cookie available");
     return res.status(401).json({ message: "No refresh cookie available" });
   }
 
   const refreshToken = cookies.jwt;
   console.log("Received refresh token: ", refreshToken);
-
-  /* res.clearCookie("jwt", {
-    httpOnly: true,
-    sameSite: "None",
-    path:"/"
-    secure: process.env.NODE_ENV === "production",
-  }); */
 
   try {
     const foundUser = await prisma.user.findFirst({
@@ -32,7 +25,7 @@ const handleRefreshToken = async (req, res) => {
     process.env.NODE_ENV === "development" &&
       console.log("User with the RT: ", foundUser);
 
-    if (foundUser === null) {
+    if (!foundUser) {
       jwt.verify(
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
@@ -97,17 +90,29 @@ const handleRefreshToken = async (req, res) => {
           process.env.REFRESH_TOKEN_SECRET,
           { expiresIn: "1d" }
         );
+
+        // Update user's refresh tokens in the database
         await prisma.user.update({
           where: { id: foundUser.id },
           data: { refreshToken: [...newRefreshTokenArray, newRefreshToken] },
         });
 
+        // Clear the old cookie after setting the new one
+        res.clearCookie("jwt", {
+          httpOnly: true,
+          sameSite: "None",
+          secure: process.env.NODE_ENV === "production",
+        });
+
+        // Set new cookie after updating the user's refresh tokens
         res.cookie("jwt", newRefreshToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           maxAge: 24 * 60 * 60 * 1000,
+          sameSite: "None",
         });
-        console.log(res.getHeaders());
+
+        // console.log(res.getHeaders());
         res.json({ accessToken });
       }
     );

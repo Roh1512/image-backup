@@ -1,0 +1,75 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-size: 16px;
+  --body-background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --headerBG: Black;
+  --logoText: rgb(240, 240, 240);
+
+  --back-Btn-Color: wheat;
+  --iconColor: wheat;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+html {
+  background-color: var(--body-background-color);
+}
+body {
+  margin: 0 auto;
+  min-width: 300px;
+  min-height: 100vh;
+  max-width: 1280px;
+  background-color: var(--body-background-color);
+  color: white;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 100vh;
+}
+
+main {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.errmsg {
+  background-color: lightpink;
+  color: firebrick;
+  font-weight: bold;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.successmsg {
+  background-color: rgb(195, 255, 182);
+  color: rgb(3, 126, 56);
+  font-weight: bold;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.offscreen {
+  position: absolute;
+  left: -9999px;
+}

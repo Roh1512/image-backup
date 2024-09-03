@@ -1,0 +1,28 @@
+header {
+  width: 100%;
+  background-color: var(--headerBG);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.2rem 0.5rem;
+}
+
+.logo {
+  margin-left: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.logoText {
+  font-size: 1.3rem;
+}
+
+.homeIcon {
+  height: 1.5rem;
+}
+.homeLink {
+  text-decoration: none;
+  color: wheat;
+}

@@ -23,8 +23,8 @@ const handleLogout = async (req, res) => {
     if (!foundUser) {
       res.clearCookie("jwt", {
         httpOnly: true,
-        sameSite: "Lax",
         secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
       });
       process.env.NODE_ENV === "development" && console.log("No user found.");
       return res.status(204).json({ message: "No user found." });
@@ -44,8 +44,8 @@ const handleLogout = async (req, res) => {
       console.log("Updating refresh Token in ", updatedUser);
     res.clearCookie("jwt", {
       httpOnly: true,
-      sameSite: "Lax",
       secure: process.env.NODE_ENV === "production",
+      sameSite: "None",
     });
     process.env.NODE_ENV === "development" &&
       console.log("Userfound and deleting cookies");

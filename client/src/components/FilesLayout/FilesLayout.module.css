@@ -1,0 +1,41 @@
+.filesLayout {
+  width: 100%;
+  flex: 1;
+}
+.navLinks {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  background-color: var(--headerBG);
+  margin-top: 0;
+  gap: 1rem;
+}
+
+.link {
+  color: var(--iconColor);
+  transition: all 0.4s;
+  padding: 0.4rem 1rem;
+  border-radius: 5px;
+}
+.activeLink {
+  background-color: var(--body-background-color);
+  border-top: 1px solid var(--iconColor);
+  border-left: 1px solid var(--iconColor);
+  border-right: 1px solid var(--iconColor);
+}
+
+.linkDiv {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--headerBG);
+}
+.addBtnGroup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+}

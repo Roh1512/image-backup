@@ -1,0 +1,37 @@
+.registerDiv {
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: center;
+  width: 100%;
+}
+
+.extra {
+  text-align: right;
+  margin-bottom: 1rem;
+}
+
+.loginForm {
+  text-align: left;
+  padding: 1rem;
+  background-color: black;
+  border: 1px dotted gray;
+  border-radius: 5px;
+}
+label {
+  font-size: 1rem;
+}
+.submitBtn {
+  width: 100%;
+  font-size: 2rem;
+  font-weight: 400;
+  margin-top: 2rem;
+}
+.successMessage {
+  background-color: rgb(219, 229, 188);
+  text-align: center;
+  color: rgb(2, 139, 59);
+  font-weight: bold;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}

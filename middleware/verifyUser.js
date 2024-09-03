@@ -10,9 +10,12 @@ const verifyUser = (req, res, next) => {
   const token = authHeader.split(" ")[1];
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) {
+      console.log("Invalid auth token");
       return res.status(401).json({ message: "Invalid Authentication token." });
     }
     req.user = decoded.UserInfo;
+    console.log(decoded);
+
     next();
   });
 };

@@ -18,6 +18,8 @@ const compression = require("compression");
 
 const app = express();
 
+app.use(express.static(path.join(__dirname, "/client/dist")));
+
 app.set("trust proxy", 1);
 
 // Rate limiter: maximum of fifty requests per minute
@@ -32,8 +34,8 @@ app.use(limiter);
 app.use(credentials);
 
 // Apply CORS middleware early
-app.options("*", cors(corsOptions));
-app.use(cors(corsOptions));
+/* app.options("*", cors(corsOptions));
+app.use(cors(corsOptions)); */
 
 // Add handler for OPTIONS requests
 
@@ -59,13 +61,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/", indexRouter);
-app.use("/auth", authRouter);
+app.use("/api", indexRouter);
+app.use("/api/auth", authRouter);
 
 // Apply user verification middleware
 app.use(verifyUser);
-app.use("/users", usersRouter);
-app.use("/files", filesRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/files", filesRouter);
 
 // Catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -77,6 +79,10 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
   res.status(err.status || 500).json({ message: "An Error occured" });
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
 });
 
 module.exports = app;

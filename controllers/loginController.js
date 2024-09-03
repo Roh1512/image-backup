@@ -16,7 +16,7 @@ const handleLogin = [
     .withMessage("Password must not be empty")
     .escape(),
   async (req, res) => {
-    const cookies = (await req.cookies) || {};
+    const cookies = req.cookies;
     process.env.NODE_ENV === "development" &&
       console.log("Cookie avalable at login:\n", JSON.stringify(cookies));
     const { username, password } = req.body;
@@ -87,6 +87,7 @@ const handleLogin = [
           res.clearCookie("jwt", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
+            sameSite: "None",
           });
         }
 
@@ -103,6 +104,7 @@ const handleLogin = [
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           maxAge: 24 * 60 * 60 * 1000,
+          sameSite: "None",
         });
         process.env.NODE_ENV === "development" &&
           console.log("New Access Token", accessToken);

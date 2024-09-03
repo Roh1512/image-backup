@@ -1,0 +1,12 @@
+.backIconButton {
+  width: fit-content;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--iconColor);
+}
+
+.backIcon {
+  height: 2rem;
+  max-height: 100px;
+}
