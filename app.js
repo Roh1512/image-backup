@@ -4,8 +4,6 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const cors = require("cors");
-const helmet = require("helmet");
 
 const corsOptions = require("./config/corsOptions");
 const indexRouter = require("./routes/index");
@@ -34,9 +32,6 @@ app.use(limiter);
 app.use(cors(corsOptions)); */
 
 // Add handler for OPTIONS requests
-
-// Helmet configuration
-app.use(helmet());
 
 app.use(logger("dev"));
 app.use(express.json({ limit: "100mb" }));
