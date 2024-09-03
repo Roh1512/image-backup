@@ -12,7 +12,6 @@ const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const authRouter = require("./routes/authRoutes");
 const filesRouter = require("./routes/files");
-const credentials = require("./middleware/credentials");
 const verifyUser = require("./middleware/verifyUser");
 const compression = require("compression");
 
@@ -29,9 +28,6 @@ const limiter = RateLimit({
   max: 1000,
 });
 app.use(limiter);
-
-// Apply credentials middleware before CORS
-app.use(credentials);
 
 // Apply CORS middleware early
 /* app.options("*", cors(corsOptions));
