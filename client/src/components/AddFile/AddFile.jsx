@@ -72,7 +72,7 @@ const AddFile = () => {
         credentials: "include", // Include credentials like cookies
       });
       const result = await response.json();
-      console.log("Upload Response: ", result);
+      // console.log("Upload Response: ", result);
 
       if (!response.ok) {
         throw new Error(result.message || "File upload failed.");
