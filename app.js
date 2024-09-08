@@ -9,10 +9,10 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { rateLimit } from "express-rate-limit";
 
-import indexRouter from "./routes/indexRoute.js";
-import authRoutes from "./routes/authRoutes.js";
-import profileRoutes from "./routes/profileRoutes.js";
-import filesRoutes from "./routes/filesRoutes.js";
+import indexRouter from "./server/routes/indexRoute.js";
+import authRoutes from "./server/routes/authRoutes.js";
+import profileRoutes from "./server/routes/profileRoutes.js";
+import filesRoutes from "./server/routes/filesRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, "client", "dist")));
 // Rate limiter: maximum of fifty requests per minute
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 50,
+  max: 500,
 });
 app.use(limiter);
 
