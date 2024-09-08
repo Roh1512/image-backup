@@ -261,6 +261,17 @@ export const deleteAccount = [
 
       //Delete files from cloudinary
       try {
+        if (userFound.profileImagePublicId) {
+          try {
+            await cloudinary.uploader.destroy(userFound.profileImagePublicId);
+          } catch (error) {
+            process.env.NODE_ENV === "development" &&
+              console.log("Error deleting old profile picture from Cloudinary");
+            return next(
+              errorHandler(500, "Failed to delete old profile image")
+            );
+          }
+        }
         const deletePromises = userFound.files.map(async (file) => {
           // Determine the resource type (image or video)
           const resourceType = file.type === "VIDEO" ? "video" : "image";
