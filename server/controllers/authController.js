@@ -105,7 +105,7 @@ export const signUp = [
       res
         .cookie("at", token, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === production,
+          secure: process.env.NODE_ENV === "production",
           expires: expiryDate,
         })
         .status(200)
@@ -179,7 +179,7 @@ export const login = [
       res
         .cookie("at", token, {
           httpOnly: true,
-          secure: process.env.NODE_ENV === production,
+          secure: process.env.NODE_ENV === "production",
           expires: expiryDate,
         })
         .status(200)
@@ -213,7 +213,7 @@ export const logout = async (req, res, next) => {
       return res
         .clearCookie("at", {
           httpOnly: true,
-          secure: process.env.NODE_ENV === production,
+          secure: process.env.NODE_ENV === "production",
         })
         .status(204)
         .json({ message: "User not found" });

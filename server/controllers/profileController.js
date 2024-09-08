@@ -287,7 +287,7 @@ export const deleteAccount = [
       });
       res.clearCookie("at", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === production,
+        secure: process.env.NODE_ENV === "production",
       });
       return res.status(200).json({ message: "User account deleted" });
     } catch (error) {

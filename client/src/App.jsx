@@ -37,9 +37,7 @@ const homeRoutes = createBrowserRouter(
           <Route path="file/:fileId" element={<FileById />} />
         </Route>
       </Route>
-      <Route element={<Layout />}>
-        <Route path="*" element={<NotFound />} />
-      </Route>
+      <Route path="*" element={<NotFound />} />
     </>
   )
 );

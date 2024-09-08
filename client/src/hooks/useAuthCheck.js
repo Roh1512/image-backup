@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Hook to check if the user is authenticated
 const useAuthCheck = () => {
+  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -10,26 +12,28 @@ const useAuthCheck = () => {
       try {
         const response = await fetch("/api/privateroute", {
           method: "GET",
-          credentials: "include", // Sends cookies with the request
+          credentials: "include",
         });
 
-        if (!response.ok) {
+        if (response.status === 401) {
           setIsAuthenticated(false);
-          setLoading(false);
-          return;
+          navigate("/home"); // Ensure this is the correct route
+        } else if (response.ok) {
+          setIsAuthenticated(true);
+        } else {
+          console.error("Unexpected response status:", response.status);
+          setIsAuthenticated(false);
         }
-        setIsAuthenticated(true);
       } catch (error) {
         console.error("Error checking authentication:", error);
         setIsAuthenticated(false);
-        setLoading(false);
       } finally {
-        setLoading(false); // Finish loading after request is done
+        setLoading(false);
       }
     };
 
     checkAuth();
-  }, []); // Run once on component mount
+  }, [navigate]);
 
   return { isAuthenticated, loading };
 };
