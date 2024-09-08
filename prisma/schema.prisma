@@ -14,14 +14,16 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  username     String   @unique
-  email        String   @unique
-  password     String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @default(now())
-  refreshToken String[]
-  files        File[]
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  imageUrl             String?
+  profileImagePublicId String?
+  username             String   @unique
+  email                String   @unique
+  password             String   @unique
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @default(now())
+  tokens               String[] @map("refreshToken")
+  files                File[]
 }
 
 model File {

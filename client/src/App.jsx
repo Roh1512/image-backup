@@ -1,59 +1,51 @@
-import { Routes, Route } from "react-router-dom";
-/* import Layout from "./components/layout/Layout"; */
-import Login from "./pages/login/Login";
-import Register from "./pages/register/Register";
-import LandingPage from "./pages/landingPage/LandingPage";
-import Unauthorized from "./pages/unauthorized/Unauthorized";
-import RequireAuth from "./components/RequireAuth/RequireAuth";
-import PersistLogin from "./components/PersistLogin";
-import DashboardLayout from "./components/dashboardLayout/DashboardLayout";
-import ProfilePage from "./pages/ProfilePage/ProfilePage";
-import ErrorElement from "./components/ErrorElement/ErrorElement";
-import FilesLayout from "./components/FilesLayout/FilesLayout";
-import Images from "./pages/Images/Images";
-import ImageById from "./pages/Images/ImageById";
-import LinkToFiles from "./components/LinkToFiles/LinkToFiles";
-import Videos from "./pages/Videos/Videos";
-import VideoById from "./pages/Videos/VideoById";
+import {
+  Route,
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+} from "react-router-dom";
 
-function App() {
-  return (
+import Layout from "./components/Layout/Layout";
+
+import Home from "./pages/home/Home";
+import Login from "./pages/Login/Login";
+import Signup from "./pages/Signup/Signup";
+import RequireAuth from "./components/RequireAuth";
+import NotFound from "./components/NotFound/NotFound";
+import PrivateLayout from "./components/Layout/PrivateLayout";
+import Profile from "./pages/Profile/Profile";
+import DashboardLayout from "./components/Layout/DashboardLayout";
+import Images from "./pages/Images/Images";
+import Videos from "./pages/Videos/Videos";
+import FileById from "./pages/ImageById/FileById";
+
+const homeRoutes = createBrowserRouter(
+  createRoutesFromElements(
     <>
-      <Routes>
-        <Route path="/" errorElement={<ErrorElement />}>
-          {/*Unprotected routes */}
-          <Route index element={<LandingPage />} />
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-          <Route path="*" element={<Unauthorized />} />
-          {/* <Route path="error" element={<ErrorElement />} /> */}
-          {/*Protected Routes */}
-          <Route element={<PersistLogin />} errorElement={<ErrorElement />}>
-            <Route element={<RequireAuth />} errorElement={<ErrorElement />}>
-              <Route
-                path="dashboard"
-                element={<DashboardLayout />}
-                errorElement={<ErrorElement />}
-              >
-                <Route
-                  path=""
-                  element={<FilesLayout />}
-                  errorElement={<ErrorElement />}
-                >
-                  <Route index element={<LinkToFiles />} />
-                  <Route path="images" element={<Images />} />
-                  <Route path="videos" element={<Videos />} />
-                </Route>
-                <Route path="images/:imageid" element={<ImageById />} />
-                <Route path="videos/:videoid" element={<VideoById />} />
-                <Route path="profile" element={<ProfilePage />} />
-              </Route>
-            </Route>
+      <Route path="/home" element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="login" element={<Login />} />
+        <Route path="signup" element={<Signup />} />
+      </Route>
+      <Route path="/" element={<RequireAuth />}>
+        <Route element={<PrivateLayout />}>
+          <Route element={<DashboardLayout />}>
+            <Route index element={<Images />} />
+            <Route path="videos" element={<Videos />} />
           </Route>
+          <Route path="profile" element={<Profile />} />
+          <Route path="file/:fileId" element={<FileById />} />
         </Route>
-      </Routes>
+      </Route>
+      <Route element={<Layout />}>
+        <Route path="*" element={<NotFound />} />
+      </Route>
     </>
-  );
-}
+  )
+);
+
+const App = () => {
+  return <RouterProvider router={homeRoutes} />;
+};
 
 export default App;

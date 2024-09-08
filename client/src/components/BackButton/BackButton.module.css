@@ -1,0 +1,17 @@
+.backButton {
+  font-size: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--body-text);
+  background: transparent;
+  font-weight: 800;
+  border-radius: 50%;
+  border: none;
+  transition: all 200ms;
+  width: min-content;
+  height: min-content;
+}
+.backButton:active {
+  transform: scale(0.8);
+}

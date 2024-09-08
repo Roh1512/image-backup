@@ -1,102 +1,104 @@
-import styles from "./Videos.module.css";
-import { useState, useEffect } from "react";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import useRefreshContext from "../../hooks/useRefreshContext";
-import { Link } from "react-router-dom";
-import LoadingElement from "../../components/LoadingElement/LoadingElement";
-import VideoIcon from "../../components/Icons/VideoIcon";
+import { useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
+import { useNavigate } from "react-router-dom";
 
-const URL = "/files";
+import useRefreshContext from "../../hooks/useRefreshContext";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
+import { MdVideoLibrary } from "react-icons/md";
+import { GrNext } from "react-icons/gr";
+import { GrPrevious } from "react-icons/gr";
 
 const Videos = () => {
-  const { refresh } = useRefreshContext();
-  const [isLoading, setIsLoading] = useState(false);
-  const [totalPages, setTotalPages] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
   const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState(null);
-
-  const axiosPrivate = useAxiosPrivate();
+  const { refresh } = useRefreshContext();
+  const limit = 6;
 
   useEffect(() => {
-    const fetchVideos = async () => {
+    const fetchFiles = async (page) => {
       try {
-        setIsLoading(true);
-        const response = await axiosPrivate.get(URL, {
-          params: {
-            type: "VIDEO",
-            page: currentPage,
-            limit: 10,
-          },
-        });
-        import.meta.env.DEV && console.log(response.data.files);
-        setVideos(response.data.files);
-        setTotalPages(response.data.totalPages);
+        setLoading(true);
+        setError(null);
+        const response = await fetch(
+          `/api/files?page=${currentPage}&limit=${limit}&type=VIDEO`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+        const data = await response.json();
+        console.log("Videos fetched, page = ", page, " ", data);
+        if (!response.ok) {
+          setLoading(false);
+          setError(data.message || "Error fetching files");
+          return;
+        }
+        setVideos(data.files);
+        setCurrentPage(data.currentPage);
+        setTotalPages(data.totalPages);
+        setLoading(false);
       } catch (error) {
-        setIsLoading(false);
-        setError("Error fetching videos.");
-        import.meta.env.DEV && console.log("Error fetichin videos: ", error);
+        console.error(error);
+        setLoading(false);
+        setError("Error fetching files");
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
-    fetchVideos();
+    fetchFiles();
   }, [currentPage, refresh]);
 
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
     }
   };
 
   return (
-    <>
-      {isLoading ? (
-        <LoadingElement />
+    <div className="videosDiv">
+      {loading ? (
+        <LoadingAnimation />
       ) : error ? (
         <p>{error}</p>
       ) : (
-        <>
-          <div className={styles.allVideosDiv}>
-            {videos.length > 0 ? (
-              videos.map((video) => (
-                <div key={video.id} className={styles.videoDiv}>
-                  <Link to={`${video.id}`} className={styles.videoLink}>
-                    <VideoIcon />
-                    <p>{video.name}</p>
-                  </Link>
-                </div>
-              ))
-            ) : (
-              <p>No Videos to show</p>
-            )}
-          </div>
-          {videos.length > 0 && totalPages > 1 && (
-            <div className={styles.pagination}>
-              {currentPage > 1 && (
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </button>
-              )}
-              <span>
-                Page {currentPage} of {totalPages}
-              </span>
-              {!(currentPage === totalPages) && (
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                </button>
-              )}
+        <div className="videoItems">
+          {videos.map((item) => (
+            <div
+              key={item.id}
+              className="videoItem"
+              onClick={() => navigate(`/file/${item.id}`)}
+            >
+              <MdVideoLibrary className="videoIcon" />
+              <span>{item.name}</span>
             </div>
-          )}
-        </>
+          ))}
+        </div>
       )}
-    </>
+      {/* Pagination Buttons */}
+      <div className="pagination">
+        <Button
+          variant="secondary"
+          disabled={currentPage === 1}
+          onClick={() => handlePageChange(currentPage - 1)}
+        >
+          <GrPrevious />
+        </Button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          variant="secondary"
+          disabled={currentPage === totalPages}
+          onClick={() => handlePageChange(currentPage + 1)}
+        >
+          <GrNext />
+        </Button>
+      </div>
+    </div>
   );
 };
 

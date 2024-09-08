@@ -1,113 +1,110 @@
-import styles from "./Images.module.css";
-import { useState, useEffect } from "react";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import Image from "../../components/ImageComponents/Image";
-import { Link } from "react-router-dom";
-import LoadingElement from "../../components/LoadingElement/LoadingElement";
+import { useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
+import Styles from "./Images.module.css";
 import useRefreshContext from "../../hooks/useRefreshContext";
-
-const URL = "/files";
+import { GrNext } from "react-icons/gr";
+import { GrPrevious } from "react-icons/gr";
+import { useNavigate } from "react-router-dom";
 
 const Images = () => {
+  const navigate = useNavigate();
   const { refresh } = useRefreshContext();
-  const [isLoading, setIsLoading] = useState(false);
-  const [totalPages, setTotalPages] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
   const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState(null);
+  const limit = 6; // Number of items per page
 
-  const axiosPrivate = useAxiosPrivate();
-
-  useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        setIsLoading(true);
-        const response = await axiosPrivate.get(URL, {
-          params: {
-            type: "IMAGE",
-            page: currentPage,
-            limit: 10,
-          },
-        });
-        import.meta.env.DEV && console.log(response.data);
-        setImages(response.data.files);
-        setTotalPages(response.data.totalPages);
-      } catch (error) {
-        setIsLoading(false);
-        setError("Error fetching images");
-        import.meta.env.DEV && console.log(error);
-      } finally {
-        setIsLoading(false);
+  const fetchFiles = async (page) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `/api/files?page=${currentPage}&limit=${limit}&type=IMAGE`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+      const data = await response.json();
+      console.log("Images fetched, page = ", page, " ", data);
+      if (!response.ok) {
+        setLoading(false);
+        setError(data.message || "Error fetching files");
+        return;
       }
-    };
-    fetchImages();
-  }, [currentPage, refresh]);
-
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+      setImages(data.files);
+      setCurrentPage(data.currentPage);
+      setTotalPages(data.totalPages);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+      setError("Error fetching files");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Function to apply transformations to the image URL
-  const getTransformedUrl = (url) => {
-    // Insert your desired transformations here, e.g., resizing to 300x300 pixels.
-    const transformation = "c_fill,q_auto,f_auto";
-    // The transformation needs to be inserted right after the "upload" part of the URL.
-    const splitUrl = url.split("/upload/");
-    return `${splitUrl[0]}/upload/${transformation}/${splitUrl[1]}`;
+  useEffect(() => {
+    fetchFiles(currentPage);
+  }, [currentPage, refresh]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
   };
 
   return (
-    <>
-      {isLoading ? (
-        <LoadingElement />
+    <div className={Styles.imagesDiv}>
+      {loading ? (
+        <div className={Styles.loadingDiv}>
+          <Spinner animation="border" role="status" className={Styles.center}>
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </div>
       ) : error ? (
         <p>{error}</p>
       ) : (
-        <>
-          <div className={styles.allImagesDiv}>
-            {images.length > 0 &&
-              images.map((image) => (
-                <div key={image.id} className={styles.imageDiv}>
-                  <Link to={`${image.id}`}>
-                    <Image
-                      url={getTransformedUrl(image.url)}
-                      className={styles.image}
-                    />
-                  </Link>
-                </div>
-              ))}
+        <div className={Styles.itemDivContainer}>
+          <div className={Styles.itemsListContainer}>
+            {images.map((file) => (
+              <div
+                key={file.id}
+                className={Styles.itemDiv}
+                onClick={() => navigate(`file/${file.id}`)}
+              >
+                <img className={Styles.image} src={file.url} />
+              </div>
+            ))}
           </div>
-          {!images.length && (
-            <p className={styles.noImage}>No images to show.</p>
-          )}
-          {images.length > 0 && totalPages > 1 && (
-            <div className={styles.pagination}>
-              {currentPage > 1 && (
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </button>
-              )}
-              <span>
-                Page {currentPage} of {totalPages}
-              </span>
-              {!(currentPage === totalPages) && (
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                </button>
-              )}
-            </div>
-          )}
-        </>
+
+          {/* Pagination Buttons */}
+          <div className="pagination">
+            <Button
+              variant="secondary"
+              disabled={currentPage === 1}
+              onClick={() => handlePageChange(currentPage - 1)}
+            >
+              <GrPrevious />
+            </Button>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              variant="secondary"
+              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              <GrNext />
+            </Button>
+          </div>
+        </div>
       )}
-    </>
+    </div>
   );
 };
 
