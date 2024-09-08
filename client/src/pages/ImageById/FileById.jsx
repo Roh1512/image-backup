@@ -30,7 +30,7 @@ const FileById = () => {
           credentials: "include",
         });
         const result = await response.json();
-        console.log("Fetched File: ", result);
+        // console.log("Fetched File: ", result);
         if (!response.ok) {
           setError(error.message || "Error fetching file.");
           return;

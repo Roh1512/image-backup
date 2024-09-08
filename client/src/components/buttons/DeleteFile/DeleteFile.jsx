@@ -25,8 +25,6 @@ const DeleteFile = ({ id }) => {
     setLoading(false);
   };
 
-  console.log(id);
-
   const handleDeleteFile = async () => {
     try {
       setLoading(true);
@@ -36,7 +34,7 @@ const DeleteFile = ({ id }) => {
         credentials: "include",
       });
       const result = await response.json();
-      console.log(result);
+      // console.log(result);
       if (!response.ok) {
         setError(result.message || "Error deleting file");
         setLoading(false);

@@ -78,7 +78,7 @@ const ChangePasswordModal = () => {
         body: JSON.stringify({ currentPassword, newPassword }),
       });
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       if (!response.ok) {
         dispatch(updateUserFailure(data));
         return;

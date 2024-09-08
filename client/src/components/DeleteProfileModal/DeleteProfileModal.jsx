@@ -54,7 +54,7 @@ const DeleteProfileModal = () => {
         body: JSON.stringify({ password }),
       });
       const data = await response.json();
-      console.log("Profile Delete Response: ", data);
+      // console.log("Profile Delete Response: ", data);
       if (!response.ok) {
         dispatch(deleteUserFailure(data));
         return;
