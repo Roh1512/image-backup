@@ -66,15 +66,17 @@ export const editProfile = [
         },
       });
 
-      /* console.log(
-        "Checking for duplicate user with username:",
-        username,
-        "and email:",
-        email
-      ); */
+      process.env.NODE_ENV === "development" &&
+        console.log(
+          "Checking for duplicate user with username:",
+          username,
+          "and email:",
+          email
+        );
 
       if (duplicateUser) {
-        // console.log("Duplicate user: ", duplicateUser);
+        process.env.NODE_ENV === "development" &&
+          console.log("Duplicate user: ", duplicateUser);
         return next(errorHandler(400, "Username or email already exists."));
       }
       const updatedUser = await prisma.user.update({
@@ -177,7 +179,8 @@ export const editProfilePicture = [
         try {
           await cloudinary.uploader.destroy(currentUser.profileImagePublicId);
         } catch (error) {
-          console.log("Error deleting old profile picture from Cloudinary");
+          process.env.NODE_ENV === "development" &&
+            console.log("Error deleting old profile picture from Cloudinary");
           return next(errorHandler(500, "Failed to delete old profile image"));
         }
       }
@@ -189,7 +192,8 @@ export const editProfilePicture = [
         },
         async (error, result) => {
           if (error) {
-            console.log("Error uploading new profile image to Cloudinary");
+            process.env.NODE_ENV === "development" &&
+              console.log("Error uploading new profile image to Cloudinary");
             return next(errorHandler(500, "Failed to upload profile image"));
           }
           try {
@@ -206,7 +210,8 @@ export const editProfilePicture = [
             const { password, tokens, ...rest } = updatedUser;
             return res.status(200).json(rest);
           } catch (error) {
-            console.log("Error updating profile image in database");
+            process.env.NODE_ENV === "development" &&
+              console.log("Error updating profile image in database");
             return next(
               errorHandler(500, "Error saving new profile image in database")
             );
@@ -271,7 +276,8 @@ export const deleteAccount = [
         // Wait for all delete operations to complete
         await Promise.all(deletePromises);
       } catch (error) {
-        console.log("Error deleting files: ", error);
+        process.env.NODE_ENV === "development" &&
+          console.log("Error deleting files: ", error);
 
         return next(errorHandler(500, "Error deleting files from cloudinary"));
       }

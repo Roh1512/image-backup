@@ -108,7 +108,8 @@ export const createFile = [
           },
           async (error, result) => {
             if (error) {
-              console.log("Error uploading to cloudinary");
+              process.env.NODE_ENV === "production" &&
+                console.log("Error uploading to cloudinary");
               return next(errorHandler(500, "Failed to upload to cloudinary"));
             }
             try {

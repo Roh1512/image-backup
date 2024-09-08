@@ -99,7 +99,8 @@ export const signUp = [
         ...sanitizedUser
       } = updateUserTokenArray;
 
-      console.log(updateUserTokenArray);
+      process.env.NODE_ENV === "development" &&
+        console.log(updateUserTokenArray);
       const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
       res
@@ -169,7 +170,8 @@ export const login = [
           },
         },
       });
-      console.log(updateUserTokenArray);
+      process.env.NODE_ENV === "development" &&
+        console.log(updateUserTokenArray);
       const {
         password: hashedPW,
         tokens,
@@ -193,11 +195,12 @@ export const login = [
 export const logout = async (req, res, next) => {
   const cookies = req.cookies;
   if (!cookies?.at) {
-    console.log("No at cookies found");
+    process.env.NODE_ENV === "development" &&
+      console.log("No at cookies found");
     return res.status(204).json({ message: "No content found" });
   }
   const token = cookies.at;
-  console.log(token);
+  process.env.NODE_ENV === "development" && console.log(token);
 
   try {
     const foundUser = await prisma.user.findFirst({
@@ -207,7 +210,8 @@ export const logout = async (req, res, next) => {
         },
       },
     });
-    console.log("Found User: ", foundUser);
+    process.env.NODE_ENV === "development" &&
+      console.log("Found User: ", foundUser);
 
     if (!foundUser) {
       return res
@@ -229,7 +233,8 @@ export const logout = async (req, res, next) => {
         tokens: updatedTokenArray,
       },
     });
-    console.log("Updated Tokens: ", updatedUser);
+    process.env.NODE_ENV === "development" &&
+      console.log("Updated Tokens: ", updatedUser);
 
     return res
       .clearCookie("at", {
