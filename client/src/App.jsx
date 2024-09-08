@@ -8,7 +8,7 @@ import {
 import Layout from "./components/Layout/Layout";
 
 import Home from "./pages/home/Home";
-import Login from "./pages/Login/Login";
+import Login from "./pages/Login/Login.jsx";
 import Signup from "./pages/Signup/Signup";
 import RequireAuth from "./components/RequireAuth";
 import NotFound from "./components/NotFound/NotFound";
