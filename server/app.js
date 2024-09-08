@@ -5,6 +5,8 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import compression from "compression";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 import indexRouter from "./routes/indexRoute.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -15,10 +17,12 @@ import filesRoutes from "./routes/filesRoutes.js";
 dotenv.config();
 
 console.log(process.env.NODE_ENV);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, "/client/dist")));
+app.use(express.static(path.join(__dirname, "client", "dist")));
 
 // Rate limiter: maximum of fifty requests per minute
 const limiter = rateLimit({
