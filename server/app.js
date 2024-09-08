@@ -18,14 +18,14 @@ console.log(process.env.NODE_ENV);
 
 const app = express();
 
-// app.use(express.static(path.join(__dirname, "/client/dist")));
+app.use(express.static(path.join(__dirname, "/client/dist")));
 
 // Rate limiter: maximum of fifty requests per minute
-/* const limiter = rateLimit({
+const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 50,
 });
-app.use(limiter); */
+app.use(limiter);
 
 app.use(logger("dev"));
 app.use(express.json({ limit: "100mb" }));
@@ -71,8 +71,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-/* app.get("*", (req, res) => {
+app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
-}); */
+});
 
 export default app;
