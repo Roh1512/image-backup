@@ -10,7 +10,7 @@ import {
   loginSuccess,
 } from "../../redux/user/userSlice.js";
 
-import { useTheme } from "../../context/themeContext/ThemeContext";
+import { useTheme } from "../../context/themeContext/ThemeContext.jsx";
 import { useLoading, useError } from "../../redux/user/userHooks.js";
 import AlertErrorMessage from "../../components/AlertErrorMessage.jsx";
 import { useDispatch } from "react-redux";
