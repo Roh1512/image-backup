@@ -7,6 +7,7 @@ import logger from "morgan";
 import compression from "compression";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { rateLimit } from "express-rate-limit";
 
 import indexRouter from "./routes/indexRoute.js";
 import authRoutes from "./routes/authRoutes.js";
