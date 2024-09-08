@@ -22,14 +22,14 @@ const Images = () => {
     setError(null);
     try {
       const response = await fetch(
-        `/api/files?page=${currentPage}&limit=${limit}&type=IMAGE`,
+        `/api/files?page=${page}&limit=${limit}&type=IMAGE`,
         {
           method: "GET",
           credentials: "include",
         }
       );
       const data = await response.json();
-      console.log("Images fetched, page = ", page, " ", data);
+      // console.log("Images fetched, page = ", page, " ", data);
       if (!response.ok) {
         setLoading(false);
         setError(data.message || "Error fetching files");

@@ -24,14 +24,14 @@ const Videos = () => {
         setLoading(true);
         setError(null);
         const response = await fetch(
-          `/api/files?page=${currentPage}&limit=${limit}&type=VIDEO`,
+          `/api/files?page=${page}&limit=${limit}&type=VIDEO`,
           {
             method: "GET",
             credentials: "include",
           }
         );
         const data = await response.json();
-        console.log("Videos fetched, page = ", page, " ", data);
+        // console.log("Videos fetched, page = ", page, " ", data);
         if (!response.ok) {
           setLoading(false);
           setError(data.message || "Error fetching files");

@@ -52,7 +52,7 @@ const Login = () => {
         body: JSON.stringify({ username, password }),
       });
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       if (!response.ok) {
         dispatch(loginFailure(data));
         return;
