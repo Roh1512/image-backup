@@ -7,6 +7,7 @@ import logger from "morgan";
 import compression from "compression";
 import { rateLimit } from "express-rate-limit";
 
+// Import your route handlers
 import indexRouter from "./routes/indexRoute.js";
 import authRoutes from "./routes/authRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
@@ -15,12 +16,13 @@ import filesRoutes from "./routes/filesRoutes.js";
 // Load environment variables
 dotenv.config();
 
-console.log(process.env.NODE_ENV);
 const __dirname = path.resolve();
 
 const app = express();
+app.set("trust proxy", 1); // Trust the first proxy
 
-app.use(express.static(path.resolve(__dirname, "client", "dist")));
+// Serve static files from the 'client/dist' directory
+app.use(express.static(path.join(__dirname, "client", "dist")));
 
 // Rate limiter: maximum of fifty requests per minute
 const limiter = rateLimit({
@@ -38,7 +40,7 @@ app.use(compression());
 app.use((req, res, next) => {
   res.setTimeout(1000000, () => {
     console.log("Request has timed out.");
-    res.send(408);
+    res.sendStatus(408);
   });
   next();
 });
@@ -48,17 +50,22 @@ app.use((req, res, next) => {
     const { password, ...sanitizedUser } = req.user._doc || req.user; // Use _doc for Mongoose models
     res.locals.user = sanitizedUser;
   }
-
   next();
 });
 
+// API routes
 app.use("/api", indexRouter);
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/files", filesRoutes);
 
+// Fallback to index.html for client-side routing
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+});
+
 // Catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   next(createError(404));
 });
 
@@ -71,10 +78,6 @@ app.use((err, req, res, next) => {
     message,
     statusCode,
   });
-});
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
 });
 
 export default app;
