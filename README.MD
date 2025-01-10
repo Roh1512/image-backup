@@ -14,6 +14,7 @@ A simple web based application to store and backup images and videos. A user can
 ### Backend
 
 - **Frameword**: ExpressJS
+- **ORM**: Prisma
 - **Database**: MongoDB
 - **Authentication**: session cookie
 - **Storage**: Cloudinary (for media uploads)
@@ -31,8 +32,10 @@ A simple web based application to store and backup images and videos. A user can
 
 ## Installation
 
+### Prerequisites
+
 - Node.js 16+
-- PostgreSQL / MongoDB database instance
+- MongoDB database instance
 
 ### Backend setup
 
