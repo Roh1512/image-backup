@@ -1,6 +1,6 @@
 # Images and videos backup app
 
-Build with expressjs and react
+A simple web based application to store and backup images and videos. A user can login and store images and videos from this application.
 
 ## Features
 
